@@ -10,6 +10,6 @@ run = "bun run deploy"
 [tasks."secrets:push"]
 description = "Upload GITHUB_WEBHOOK_SECRET and GITHUB_APP_PRIVATE_KEY from fnox.cloud.toml to the Worker"
 run = [
-  "fnox -P cloud get GITHUB_WEBHOOK_SECRET | bunx wrangler secret put GITHUB_WEBHOOK_SECRET",
-  "fnox -P cloud get GITHUB_APP_PRIVATE_KEY | bunx wrangler secret put GITHUB_APP_PRIVATE_KEY",
+  "fnox -P cloud exec --if-missing error -- sh -c 'printf %s \"$GITHUB_WEBHOOK_SECRET\" | bunx wrangler secret put GITHUB_WEBHOOK_SECRET'",
+  "fnox -P cloud exec --if-missing error -- sh -c 'printf %s \"$GITHUB_APP_PRIVATE_KEY\" | bunx wrangler secret put GITHUB_APP_PRIVATE_KEY'",
 ]

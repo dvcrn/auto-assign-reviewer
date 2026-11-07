@@ -5,7 +5,7 @@
   "compatibility_date": "2026-11-01",
   "workers_dev": true,
   "vars": {
-    // GitHub App "Auto Assign PR"
+    // GitHub App "assignicorn"
     "APP_ID": "5657291",
     // Login requested as reviewer on every newly opened pull request
     "REVIEWER": "dvcrn"

@@ -77,6 +77,17 @@ describe("worker", () => {
     expect(JSON.parse(calls[1].init.body as string)).toEqual({ reviewers: ["dvcrn"] });
   });
 
+  test("returns 502 when GitHub rejects the review request", async () => {
+    globalThis.fetch = (async (url: string) =>
+      url.endsWith("/access_tokens")
+        ? Response.json({ token: "installation-token" }, { status: 201 })
+        : Response.json({ message: "Validation Failed" }, { status: 422 })) as typeof fetch;
+
+    const res = await worker.fetch(await delivery(opened("someone")), env);
+
+    expect(res.status).toBe(502);
+  });
+
   test("skips pull requests opened by the reviewer", async () => {
     const fetchMock = mock(realFetch);
     globalThis.fetch = fetchMock as unknown as typeof fetch;

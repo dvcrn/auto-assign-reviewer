@@ -62,16 +62,17 @@ export default {
       return new Response("Review already requested", { status: 202 });
     }
 
-    const token = await installationToken(env, installationId);
-    const res = await fetch(`${GITHUB_API}/repos/${repo}/pulls/${pr.number}/requested_reviewers`, {
-      method: "POST",
-      headers: { ...GITHUB_HEADERS, Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ reviewers: [env.REVIEWER] }),
-    });
-    if (!res.ok) {
-      const detail = await res.text();
-      console.error(`Review request for ${repo}#${pr.number} failed: ${res.status} ${detail}`);
-      return new Response(`GitHub responded ${res.status}`, { status: 502 });
+    try {
+      const token = await installationToken(env, installationId);
+      const res = await fetch(`${GITHUB_API}/repos/${repo}/pulls/${pr.number}/requested_reviewers`, {
+        method: "POST",
+        headers: { ...GITHUB_HEADERS, Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reviewers: [env.REVIEWER] }),
+      });
+      if (!res.ok) throw new Error(`Review request failed: ${res.status} ${await res.text()}`);
+    } catch (err) {
+      console.error(`${repo}#${pr.number}: ${err instanceof Error ? err.message : err}`);
+      return new Response("GitHub request failed", { status: 502 });
     }
 
     console.log(`Requested review from ${env.REVIEWER} on ${repo}#${pr.number}`);

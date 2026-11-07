@@ -23,3 +23,4 @@ mise run secrets:push   # uploads GITHUB_WEBHOOK_SECRET and GITHUB_APP_PRIVATE_K
 ```
 
 `GITHUB_APP_PRIVATE_KEY` must be PKCS#8. Convert the key GitHub downloads with `openssl pkcs8 -topk8 -nocrypt -in app.pem`.
+

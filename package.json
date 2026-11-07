@@ -1,0 +1,18 @@
+{
+  "name": "auto-assign-reviewer",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types --env-file .dev.vars.example",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.4",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.156.0"
+  }
+}

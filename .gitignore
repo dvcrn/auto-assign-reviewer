@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+dist/
+
+# Local secrets; fnox.cloud.toml holds only ciphertext and is committed
+fnox.toml
+.dev.vars*
+!.dev.vars.example
+.env
+.env.*
+
+*.log
+.DS_Store

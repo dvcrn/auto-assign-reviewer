@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "auto-assign-reviewer",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "vars": {
+    // GitHub App "Auto Assign PR"
+    "APP_ID": "5657291",
+    // Login requested as reviewer on every newly opened pull request
+    "REVIEWER": "dvcrn"
+  },
+  // Secrets (set with `mise run secrets:push`): GITHUB_WEBHOOK_SECRET, GITHUB_APP_PRIVATE_KEY (PKCS#8 PEM)
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "destinations": ["new-relic-logs", "axiom-logs"],
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    }
+  }
+}

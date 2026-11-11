@@ -97,4 +97,14 @@ describe("worker", () => {
     expect(res.status).toBe(202);
     expect(fetchMock).not.toHaveBeenCalled();
   });
+
+  test("skips pull requests opened by Dependabot", async () => {
+    const fetchMock = mock(realFetch);
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const res = await worker.fetch(await delivery(opened("dependabot[bot]")), env);
+
+    expect(res.status).toBe(202);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

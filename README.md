@@ -10,7 +10,7 @@ Webhook URL: `https://auto-assign-reviewer.dsh.workers.dev`
 - Permissions: Pull requests (read and write)
 - Events: Pull request
 
-Pull requests opened by `REVIEWER` are skipped, since GitHub rejects review requests for the author.
+Pull requests opened by `dependabot[bot]` are skipped, as are those opened by `REVIEWER`, since GitHub rejects review requests for the author.
 
 ## Development
 

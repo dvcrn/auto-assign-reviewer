@@ -53,9 +53,12 @@ export default {
       return new Response("Missing installation, repository or pull request", { status: 400 });
     }
 
+    const author = pr.user?.login?.toLowerCase();
+    if (author === "dependabot[bot]") return new Response("Ignored Dependabot pull request", { status: 202 });
+
     const reviewer = env.REVIEWER.toLowerCase();
     // GitHub rejects a review request for the pull request's own author with 422.
-    if (pr.user?.login?.toLowerCase() === reviewer) {
+    if (author === reviewer) {
       return new Response("Author is the reviewer", { status: 202 });
     }
     if (pr.requested_reviewers?.some((r) => r.login?.toLowerCase() === reviewer)) {

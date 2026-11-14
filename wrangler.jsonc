@@ -8,7 +8,9 @@
     // GitHub App "assignicorn"
     "APP_ID": "5657291",
     // Login requested as reviewer on every newly opened pull request
-    "REVIEWER": "dvcrn"
+    "REVIEWER": "dvcrn",
+    // Repository prefixes ("owner/") or full names ("owner/repo") eligible for review assignment
+    "ALLOWED_REPOS": ["dvcrn/", "digitalvibeshq/", "microfnhq/"]
   },
   // Secrets (set with `mise run secrets:push`): GITHUB_WEBHOOK_SECRET, GITHUB_APP_PRIVATE_KEY (PKCS#8 PEM)
   "observability": {

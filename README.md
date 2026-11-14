@@ -1,6 +1,6 @@
 # auto-assign-reviewer
 
-Cloudflare Worker that requests a review from `REVIEWER` on every newly opened pull request, acting as the GitHub App [assignicorn](https://github.com/apps/assignicorn).
+Cloudflare Worker that requests a review from `REVIEWER` on newly opened pull requests in repositories matching `ALLOWED_REPOS` (configured in `wrangler.jsonc`), acting as the GitHub App [assignicorn](https://github.com/apps/assignicorn).
 
 Webhook URL: `https://auto-assign-reviewer.dsh.workers.dev`
 

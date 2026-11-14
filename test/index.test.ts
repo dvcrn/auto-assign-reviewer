@@ -13,7 +13,13 @@ beforeAll(async () => {
   )) as CryptoKeyPair;
   const der = new Uint8Array((await crypto.subtle.exportKey("pkcs8", privateKey)) as ArrayBuffer);
   const pem = `-----BEGIN PRIVATE KEY-----\n${Buffer.from(der).toString("base64")}\n-----END PRIVATE KEY-----\n`;
-  env = { APP_ID: "5657291", REVIEWER: "dvcrn", GITHUB_WEBHOOK_SECRET: SECRET, GITHUB_APP_PRIVATE_KEY: pem } as Env;
+  env = {
+    APP_ID: "5657291",
+    REVIEWER: "dvcrn",
+    ALLOWED_REPOS: ["dvcrn/", "digitalvibeshq/", "microfnhq/"],
+    GITHUB_WEBHOOK_SECRET: SECRET,
+    GITHUB_APP_PRIVATE_KEY: pem,
+  } as Env;
 });
 
 afterEach(() => {
@@ -37,10 +43,10 @@ async function delivery(payload: unknown, secret = SECRET): Promise<Request> {
   });
 }
 
-const opened = (author: string) => ({
+const opened = (author: string, repo = "dvcrn/example") => ({
   action: "opened",
   installation: { id: 42 },
-  repository: { full_name: "dvcrn/example" },
+  repository: { full_name: repo },
   pull_request: { number: 7, user: { login: author }, requested_reviewers: [] },
 });
 
@@ -106,5 +112,29 @@ describe("worker", () => {
 
     expect(res.status).toBe(202);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  test("allows configured repository prefixes case-insensitively and ignores other repos", async () => {
+    const requestedUrls: string[] = [];
+    globalThis.fetch = (async (url: string) => {
+      requestedUrls.push(url);
+      return url.endsWith("/access_tokens")
+        ? Response.json({ token: "installation-token" }, { status: 201 })
+        : Response.json({}, { status: 201 });
+    }) as typeof fetch;
+
+    for (const repo of ["DigitalVibesHQ/web", "microfnhq/api"]) {
+      const res = await worker.fetch(await delivery(opened("someone", repo)), env);
+      expect(res.status).toBe(201);
+    }
+    expect(requestedUrls).toContain("https://api.github.com/repos/DigitalVibesHQ/web/pulls/7/requested_reviewers");
+    expect(requestedUrls).toContain("https://api.github.com/repos/microfnhq/api/pulls/7/requested_reviewers");
+
+    requestedUrls.length = 0;
+    for (const repo of ["other-org/repo", "dvcrn-fork/repo"]) {
+      const res = await worker.fetch(await delivery(opened("someone", repo)), env);
+      expect(res.status).toBe(202);
+    }
+    expect(requestedUrls).toEqual([]);
   });
 });

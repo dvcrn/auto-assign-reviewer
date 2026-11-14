@@ -53,6 +53,10 @@ export default {
       return new Response("Missing installation, repository or pull request", { status: 400 });
     }
 
+    if (!isAllowedRepo(repo, env.ALLOWED_REPOS)) {
+      return new Response(`Ignored repository ${repo}`, { status: 202 });
+    }
+
     const author = pr.user?.login?.toLowerCase();
     if (author === "dependabot[bot]") return new Response("Ignored Dependabot pull request", { status: 202 });
 
@@ -82,6 +86,16 @@ export default {
     return new Response(`Requested review from ${env.REVIEWER}`, { status: 201 });
   },
 } satisfies ExportedHandler<Env>;
+
+export function isAllowedRepo(repo: string, allowed: readonly string[]): boolean {
+  const name = repo.toLowerCase();
+  return allowed.some((entry) => {
+    const pattern = entry.trim().toLowerCase();
+    if (!pattern) return false;
+    if (pattern.endsWith("/")) return name.startsWith(pattern);
+    return pattern.includes("/") ? name === pattern : name.startsWith(`${pattern}/`);
+  });
+}
 
 export async function verifySignature(secret: string, body: string, header: string | null): Promise<boolean> {
   const hex = header?.match(/^sha256=([0-9a-f]{64})$/)?.[1];
